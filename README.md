@@ -37,13 +37,13 @@ CI drift check: `uv run tanh-tooling sync --check`.
 **C++ repo** — create from the `tanh-cpp-template` GitHub template (born with the
 configs), or refresh an existing repo with the one-liner (leaves no script behind):
 ```sh
-curl -fsSL https://raw.githubusercontent.com/tanh-lab/tanh-tooling/v0.1.0/clang/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/tanh-lab/tanh-tooling/vX.Y.Z/clang/install.sh | sh
 ```
 CI drift check — one line in the consumer's existing workflow:
 ```yaml
 jobs:
   clang-config:
-    uses: tanh-lab/tanh-tooling/.github/workflows/clang-check.yml@v0.1.0
+    uses: tanh-lab/tanh-tooling/.github/workflows/clang-check.yml@vX.Y.Z
 ```
 
 **TS repo**
@@ -123,14 +123,23 @@ header. Launching the desktop app from a GUI may not inherit shell exports — s
 
 ## The Claude Code hooks
 
-The plugin contributes three PostToolUse(Write|Edit) dispatchers under
-[`plugins/tanh-tools/hooks/`](plugins/tanh-tools/hooks/). Each picks the right tool
-by file extension and, if that tool is missing, prints install instructions and
-fails (exit 2) rather than skipping silently:
+A single PostToolUse(Write|Edit) dispatcher, `check.sh`, runs three steps on the
+edited file **in order, in one process** — `lint.sh` → `format.sh` → `typecheck.sh`
+(under [`plugins/tanh-tools/hooks/`](plugins/tanh-tools/hooks/)). It is one hook
+rather than three because Claude Code runs the hooks under a matcher concurrently:
+`lint.sh` and `format.sh` both rewrite the file, so registering them separately
+races them and a file needing both a lint `--fix` and a reformat gets a
+non-deterministic result. Linting runs first so the formatter has the last word on
+whitespace (per Astral's ruff guidance). Each step picks the right tool by file
+extension and, if that tool is missing, prints install instructions and fails
+(exit 2) rather than skipping silently:
 
 - `format.sh` — clang-format (C/C++/ObjC++) · ruff format (Python) · prettier (TS/JS)
 - `lint.sh` — clang-tidy · ruff check (--fix then verify) · eslint (--fix then verify)
 - `typecheck.sh` — pyright (Python) · tsc against `tsconfig.check.json` (TS)
+
+Each step also accepts the file path as its first argument, so `check.sh` can invoke
+them directly; run standalone (no arg) they still parse the hook JSON from stdin.
 
 ## Repository layout
 

@@ -5,7 +5,8 @@
 # Non-matching file types are skipped silently (exit 0).
 set -uo pipefail
 
-FILE=$(jq -r '.tool_input.file_path // empty' 2>/dev/null)
+# FILE comes from $1 when invoked by check.sh; otherwise parse the hook JSON on stdin.
+FILE="${1:-$(jq -r '.tool_input.file_path // empty' 2>/dev/null)}"
 [ -z "$FILE" ] && exit 0
 [ -f "$FILE" ] || exit 0
 

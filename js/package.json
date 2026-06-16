@@ -1,6 +1,6 @@
 {
   "name": "@tanh-lab/tanh-tooling",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "tanh-lab shared ESLint flat-config base + Prettier base",
   "type": "module",
   "license": "MIT",

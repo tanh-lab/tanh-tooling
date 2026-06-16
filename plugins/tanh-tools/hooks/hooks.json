@@ -6,18 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/format.sh",
-            "statusMessage": "Formatting..."
-          },
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lint.sh",
-            "statusMessage": "Linting..."
-          },
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/typecheck.sh",
-            "statusMessage": "Type checking..."
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/check.sh",
+            "statusMessage": "Formatting, linting, type-checking…"
           }
         ]
       }
