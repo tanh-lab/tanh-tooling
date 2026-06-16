@@ -1,10 +1,13 @@
 [project]
 name = "tanh-tooling"
-version = "0.1.0"
+version = "0.1.1"
 description = "tanh-lab shared Python developer configuration (ruff + pyright bases) and a sync CLI."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["ruff>=0.14", "pyright>=1.1.400"]   # co-pin the tools to the config
+dependencies = [
+    "ruff>=0.14",
+    "pyright>=1.1.400",
+] # co-pin the tools to the config
 
 [[project.authors]]
 name = "Fares Schulz"
