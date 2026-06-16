@@ -5,6 +5,11 @@
   "type": "module",
   "license": "MIT",
   "author": "Fares Schulz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanh-lab/tanh-tooling.git",
+    "directory": "js"
+  },
   "publishConfig": {
     "access": "public"
   },
