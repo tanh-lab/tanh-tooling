@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "tanh-lab shared TypeScript strictness base. Layer this AFTER your framework",
+  "//2": "base (Expo/node/web) so it doesn't override module/target/lib/jsx. Only",
+  "//3": "opinionated strictness toggles live here — unused-vars are handled by ESLint.",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

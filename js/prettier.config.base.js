@@ -1,7 +1,7 @@
-// tanh-tooling/prettier — shared Prettier base.
+// @tanh-lab/tanh-tooling/prettier — shared Prettier base.
 //
 // Consumer wiring (prettier.config.js):
-//   import base from "tanh-tooling/prettier";
+//   import base from "@tanh-lab/tanh-tooling/prettier";
 //   export default { ...base /* per-repo overrides */ };
 
 /** @type {import("prettier").Config} */

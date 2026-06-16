@@ -1,17 +1,23 @@
 {
-  "name": "tanh-tooling",
+  "name": "@tanh-lab/tanh-tooling",
   "version": "0.1.0",
   "description": "tanh-lab shared ESLint flat-config base + Prettier base",
   "type": "module",
   "license": "MIT",
   "author": "Fares Schulz",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./index.js",
-    "./prettier": "./prettier.config.base.js"
+    "./prettier": "./prettier.config.base.js",
+    "./tsconfig": "./tsconfig.base.json",
+    "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "files": [
     "index.js",
-    "prettier.config.base.js"
+    "prettier.config.base.js",
+    "tsconfig.base.json"
   ],
   "dependencies": {
     "eslint-plugin-import": "^2.31.0",

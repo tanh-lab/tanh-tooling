@@ -5,7 +5,7 @@
   "author": { "name": "Fares Schulz" },
   "hooks": "./hooks/hooks.json",
   "mcpServers": "./.mcp.json",
-  "dependencies": {
-    "clangd-lsp@claude-plugins-official": "*"
-  }
+  "dependencies": [
+    "clangd-lsp@claude-plugins-official"
+  ]
 }

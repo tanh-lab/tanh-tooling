@@ -11,7 +11,7 @@ Each config family is distributed through its own ecosystem's native channel:
 |---|---|---|---|
 | Python (ruff, pyright) | [`python/`](python/) | PyPI package `tanh-tooling` | `uv add` + `tanh-tooling sync` |
 | clang (`.clang-format`/`.clang-tidy`/`.clangd`) | [`clang/`](clang/) | GitHub template repo + raw `install.sh` | born-with-it, or `curl … \| sh` |
-| JS/TS (eslint, prettier) | [`js/`](js/) | npm package `tanh-tooling` | `npm i -D` + flat-config spread |
+| JS/TS (eslint, prettier, tsconfig) | [`js/`](js/) | npm package `@tanh-lab/tanh-tooling` | `npm i -D` + flat-config spread / `extends` |
 | `.claude` (agents/skills/hooks/MCP/LSP) | [`plugins/`](plugins/) | Claude Code plugin marketplace (this repo) | committed `.claude/settings.json` |
 
 Releases are **mono-versioned**: one `vX.Y.Z` git tag ships the Python wheel and
@@ -48,17 +48,33 @@ jobs:
 
 **TS repo**
 ```sh
-npm i -D tanh-tooling eslint prettier
+npm i -D @tanh-lab/tanh-tooling eslint prettier
 ```
 ```js
 // eslint.config.js
-import tanh from "tanh-tooling";
+import tanh from "@tanh-lab/tanh-tooling";
 export default [...tanh, { /* per-repo overrides */ }];
 ```
 ```js
 // prettier.config.js
-import base from "tanh-tooling/prettier";
+import base from "@tanh-lab/tanh-tooling/prettier";
 export default { ...base };
+```
+```jsonc
+// tsconfig.json — layer the house strictness base AFTER your framework base (TS 5+)
+{
+  "extends": ["expo/tsconfig.base", "@tanh-lab/tanh-tooling/tsconfig"],
+  "compilerOptions": { "paths": { "@/*": ["./*"] } },
+  "include": ["**/*.ts", "**/*.tsx"]
+}
+```
+The `typecheck.sh` hook type-checks against a **`tsconfig.check.json`** (so it can
+narrow `include` to your hand-written source and skip generated decls). It stays
+per-repo — the hook runs `tsc` only when both `tsconfig.check.json` and a local
+`tsc` exist, otherwise it skips:
+```jsonc
+// tsconfig.check.json (per-repo)
+{ "extends": "./tsconfig.json", "include": ["src/**/*.ts", "src/**/*.tsx"] }
 ```
 
 **Any repo (Claude Code plugin)** — commit `.claude/settings.json`:
@@ -105,8 +121,26 @@ tanh-tooling/
 
 ## Releasing
 
-Tag and push `vX.Y.Z`: `release-python.yml` builds + publishes the wheel (PyPI
-trusted publishing, OIDC) and `release-js.yml` runs `npm publish` (needs the
-`NPM_TOKEN` repo secret). The same tag is the clang pin. Bump `version` in
-`plugins/tanh-tools/.claude-plugin/plugin.json` on every plugin change, or pushing
-commits ships nothing (Claude Code keeps the cached copy).
+Tag and push `vX.Y.Z`: `release-python.yml` builds + publishes the wheel and
+`release-js.yml` publishes the npm package. Both use **trusted publishing (OIDC) —
+no tokens stored in the repo**. The same tag is the clang pin.
+
+One-time setup before the first tag:
+
+- **PyPI** — create a *pending publisher* at <https://pypi.org/manage/account/publishing/>
+  (project `tanh-tooling`, owner `tanh-lab`, repo `tanh-tooling`, workflow
+  `release-python.yml`, environment `pypi`). Pending publishers work before the
+  project exists, so the first publish is already tokenless.
+- **npm** — create the `tanh-lab` org first (free, public). npm has no
+  pending-publisher mechanism, so **bootstrap the first publish with a token**, then
+  switch to OIDC:
+  1. `cd js && npm publish` once, authenticated with a granular token (or `npm login`).
+     The package is scoped to the org and `publishConfig.access` is `public`, so it
+     publishes publicly without extra flags.
+  2. On npmjs.com → the `@tanh-lab/tanh-tooling` package → Settings → Trusted Publisher
+     → add GitHub Actions: owner `tanh-lab`, repo `tanh-tooling`, workflow
+     `release-js.yml`, environment `npm`.
+  3. From then on the tagged workflow publishes tokenless; delete the bootstrap token.
+
+Bump `version` in `plugins/tanh-tools/.claude-plugin/plugin.json` on every plugin
+change, or pushing commits ships nothing (Claude Code keeps the cached copy).

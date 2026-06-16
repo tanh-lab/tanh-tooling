@@ -1,6 +1,9 @@
 name: release-js
 
 # Mono-version: the same vX.Y.Z tag publishes the npm package.
+# Tokenless via npm trusted publishing (OIDC). NOTE: the package must already
+# exist on npm before a trusted publisher can be configured — do the FIRST
+# publish manually with a token, then this workflow takes over (see README).
 on:
   push:
     tags: ["v*"]
@@ -8,14 +11,21 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write   # npm trusted publishing (OIDC) — no token to manage
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          # Node 24 ships npm >= 11 and is required for the npm OIDC
+          # trusted-publishing handshake; Node 22 (npm 10) authenticates
+          # anonymously and the publish fails with a misleading E404.
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
       - name: Publish to npm
         working-directory: js
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm --version   # must be >= 11.5.1 for OIDC trusted publishing
+          npm publish      # access=public via publishConfig; provenance + OIDC automatic

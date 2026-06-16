@@ -1,7 +1,7 @@
-// tanh-tooling — shared ESLint flat-config base.
+// @tanh-lab/tanh-tooling — shared ESLint flat-config base.
 //
 // Consumer wiring (eslint.config.js):
-//   import tanh from "tanh-tooling";
+//   import tanh from "@tanh-lab/tanh-tooling";
 //   export default [...tanh, { /* per-repo overrides */ }];
 //
 // Mirrors the tanh-lab house rules: import sorting, unused-import pruning,
