@@ -5,7 +5,7 @@
 # Override the pinned version with TANH_TOOLING_REF.
 set -eu
 
-REF="${TANH_TOOLING_REF:-v0.1.3}"
+REF="${TANH_TOOLING_REF:-v0.1.4}"
 BASE="https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${REF}/clang"
 FILES="clang-format clang-tidy clangd"
 

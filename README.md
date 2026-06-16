@@ -25,7 +25,8 @@ uv add tanh-tooling
 uv run tanh-tooling sync          # writes ruff_base.toml + pyright_base.json
 ```
 ```toml
-# ruff.toml
+# pyproject.toml
+[tool.ruff]
 extend = "ruff_base.toml"
 ```
 ```json
