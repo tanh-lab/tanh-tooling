@@ -1,0 +1,7 @@
+{
+  // Reusable pyright policy (strictness + shared rule overrides).
+  // Other projects inherit via "extends": "<path>/pyright_base.json".
+  // Keep repo-specific paths (include/exclude/venv) in each project's pyrightconfig.json,
+  // since relative paths in a base file resolve against the base file's location.
+  "typeCheckingMode": "standard"
+}

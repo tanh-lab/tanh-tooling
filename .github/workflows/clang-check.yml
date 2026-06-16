@@ -1,0 +1,28 @@
+name: clang-config-check
+
+# Reusable workflow: consumers call it from their own CI with one line:
+#
+#   jobs:
+#     clang-config:
+#       uses: tanh-lab/tanh-tooling/.github/workflows/clang-check.yml@v0.1.0
+#
+# It checks out the caller's repo and verifies its .clang-* files match the
+# pinned tanh-tooling release (nothing is committed in the consumer).
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "tanh-tooling ref (tag) to check against"
+        type: string
+        default: "v0.1.0"
+
+jobs:
+  clang-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify clang configs are in sync
+        env:
+          TANH_TOOLING_REF: ${{ inputs.ref }}
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${TANH_TOOLING_REF}/clang/install.sh" | sh -s -- --check

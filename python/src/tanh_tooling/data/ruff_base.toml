@@ -1,0 +1,12 @@
+# Reusable Ruff base config (shared style + rule selection).
+# Standalone ruff.toml format: keys are top-level, NOT under [tool.ruff].
+# Other projects can inherit this via `extend = "<path>/ruff_base.toml"`.
+# Named ruff_base.toml (not ruff.toml) on purpose: a bare ruff.toml would be
+# auto-discovered and would override pyproject.toml's [tool.ruff] instead of merging.
+
+line-length = 100
+target-version = "py311"
+
+[lint]
+# E/F = pyflakes + pycodestyle, I = isort, UP = pyupgrade, B = bugbear.
+select = ["E", "F", "I", "UP", "B"]

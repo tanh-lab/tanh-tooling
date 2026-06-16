@@ -1,0 +1,16 @@
+# Python
+python/dist/
+python/build/
+**/__pycache__/
+*.egg-info/
+.venv/
+
+# Node
+node_modules/
+*.tsbuildinfo
+
+# Claude Code personal/local overrides
+.claude/settings.local.json
+
+# OS
+.DS_Store
