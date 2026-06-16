@@ -88,9 +88,34 @@ per-repo — the hook runs `tsc` only when both `tsconfig.check.json` and a loca
 ```
 Trust the repo once; you then get the `dsp-reviewer` agent, the `crossplatform-audio`
 skill, the auto-firing format/lint/typecheck hooks, the GitHub MCP, and the clangd
-LSP (pulled in as a plugin dependency). The GitHub MCP authenticates per-user via a
-one-time `/mcp` OAuth flow — **no token to create**. (To use a PAT instead, give the
-server an `Authorization: Bearer ${GITHUB_TOKEN}` header and export the var.)
+LSP (pulled in as a plugin dependency).
+
+### GitHub MCP token
+
+The GitHub MCP server (`api.githubcopilot.com/mcp/`) needs a **personal access
+token** — its OAuth endpoint does not support dynamic client registration, so Claude
+Code's tokenless `/mcp` OAuth flow fails with *"Incompatible auth server"*. Don't pick
+**Authenticate** in the `/mcp` menu; instead the committed `.mcp.json` reads the token
+from a `GITHUB_TOKEN` env var (`Authorization: Bearer ${GITHUB_TOKEN}`) — the config
+travels, the token never does.
+
+Keep the token out of any repo. The convention here is a git-ignored `.secrets` file
+in your dotfiles that your shell sources on startup, exporting `GITHUB_TOKEN` into the
+environment Claude Code inherits. For example, in `~/.dotfiles/.secrets`:
+
+```sh
+# ~/.dotfiles/.secrets  (git-ignored; sourced from ~/.zshrc)
+export GITHUB_TOKEN="github_pat_…"     # or: export GITHUB_TOKEN="$(gh auth token)"
+```
+```sh
+# ~/.zshrc
+[ -f "$HOME/.dotfiles/.secrets" ] && source "$HOME/.dotfiles/.secrets"
+```
+
+Then restart Claude Code (or `/reload-plugins`) so the server reconnects with the
+header. Launching the desktop app from a GUI may not inherit shell exports — start
+`claude` from a terminal, or set `GITHUB_TOKEN` where the app can see it. A
+`gh`-issued token covers most tools; mint a fine-grained PAT if a specific call 403s.
 
 > Headless/CI (`claude -p`) skips the trust dialog, so committed marketplaces are
 > not auto-processed there — CI must `claude plugin marketplace add tanh-lab/tanh-tooling`
