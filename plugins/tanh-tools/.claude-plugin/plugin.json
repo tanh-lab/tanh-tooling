@@ -1,6 +1,6 @@
 {
   "name": "tanh-tools",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "tanh-lab shared Claude Code tooling: agents, skills, format/lint/typecheck hooks, GitHub MCP, and the clangd LSP",
   "author": { "name": "Fares Schulz" },
   "dependencies": [
