@@ -20,7 +20,7 @@ jobs:
   clang-config:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Verify clang configs are in sync
         env:
           TANH_TOOLING_REF: ${{ inputs.ref }}
