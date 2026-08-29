@@ -25,6 +25,7 @@ function(tanh_module_test name subdir)
         COMMAND ${CMAKE_CTEST_COMMAND} --build-and-test
             "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}" "${CMAKE_CURRENT_BINARY_DIR}/${name}"
             ${_gen}
+            --build-noclean
             --build-config Release
             --build-options -DCMAKE_BUILD_TYPE=Release ${TANH_TEST_BUILD_OPTIONS} ${ARGN}
             --test-command ${CMAKE_CTEST_COMMAND} -C Release --output-on-failure)
