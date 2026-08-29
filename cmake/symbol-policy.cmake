@@ -57,6 +57,13 @@ include_guard(GLOBAL)
 include("${CMAKE_CURRENT_LIST_DIR}/modules-version.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/platform.cmake")
 
+# cmake_parse_arguments: an empty value after a keyword is a value, not an omission
+# (CMP0174 NEW); function bodies record the policy state of their definition.
+cmake_policy(PUSH)
+if(POLICY CMP0174)
+    cmake_policy(SET CMP0174 NEW)
+endif()
+
 # _tanh_target_kind(<target> <out>): STATIC | SHARED | EXECUTABLE, resolving OBJECT
 # libraries through BUILD_SHARED_LIBS (they become part of whatever they are merged into).
 function(_tanh_target_kind target out)
@@ -222,3 +229,5 @@ function(tanh_hidden_archive_link_items archive out_libs out_opts)
         set(${out_opts} "" PARENT_SCOPE)
     endif()
 endfunction()
+
+cmake_policy(POP)

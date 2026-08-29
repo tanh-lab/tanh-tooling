@@ -17,6 +17,13 @@
 include_guard(GLOBAL)
 include("${CMAKE_CURRENT_LIST_DIR}/modules-version.cmake")
 
+# cmake_parse_arguments: an empty value after a keyword is a value, not an omission
+# (CMP0174 NEW); function bodies record the policy state of their definition.
+cmake_policy(PUSH)
+if(POLICY CMP0174)
+    cmake_policy(SET CMP0174 NEW)
+endif()
+
 function(_tanh_quiet_targets)
     foreach(_t IN LISTS ARGN)
         if(TARGET ${_t})
@@ -84,3 +91,5 @@ function(tanh_copy_runtime_dlls target)
             COMMAND_EXPAND_LISTS)
     endif()
 endfunction()
+
+cmake_policy(POP)

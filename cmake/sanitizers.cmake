@@ -13,6 +13,13 @@
 include_guard(GLOBAL)
 include("${CMAKE_CURRENT_LIST_DIR}/modules-version.cmake")
 
+# cmake_parse_arguments: an empty value after a keyword is a value, not an omission
+# (CMP0174 NEW); function bodies record the policy state of their definition.
+cmake_policy(PUSH)
+if(POLICY CMP0174)
+    cmake_policy(SET CMP0174 NEW)
+endif()
+
 function(tanh_add_sanitizer target kind)
     cmake_parse_arguments(PARSE_ARGV 2 arg "" "DEFINE;IGNORELIST" "")
     if(arg_UNPARSED_ARGUMENTS)
@@ -60,3 +67,5 @@ function(tanh_add_sanitizer target kind)
         target_compile_definitions(${target} PUBLIC ${arg_DEFINE})
     endif()
 endfunction()
+
+cmake_policy(POP)
