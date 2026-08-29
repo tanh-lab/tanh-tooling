@@ -8,13 +8,14 @@ name: clang-config-check
 #
 # It checks out the caller's repo and verifies its .clang-* files match the
 # pinned tanh-tooling release (nothing is committed in the consumer).
+# Kept for existing pins; new consumers use config-check.yml with family: "clang cmake".
 on:
   workflow_call:
     inputs:
       ref:
         description: "tanh-tooling ref (tag) to check against"
         type: string
-        default: "v0.1.0"
+        default: "v0.1.5"
 
 jobs:
   clang-config:
@@ -25,4 +26,4 @@ jobs:
         env:
           TANH_TOOLING_REF: ${{ inputs.ref }}
         run: |
-          curl -fsSL "https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${TANH_TOOLING_REF}/clang/install.sh" | sh -s -- --check
+          curl -fsSL "https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${TANH_TOOLING_REF}/install.sh" | sh -s -- --check clang

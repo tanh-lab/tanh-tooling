@@ -1,0 +1,47 @@
+name: cmake-test
+
+# Proves the cmake/ modules on the three desktop object formats (ELF, Mach-O, PE)
+# before a tag ships them: every module has a standalone test project under
+# cmake/test/ that ctest configures, builds and runs the way a consumer would.
+on:
+  push:
+    branches: [main]
+    paths: ["cmake/**", "install.sh", "clang/**", ".github/workflows/cmake-test.yml"]
+  pull_request:
+    paths: ["cmake/**", "install.sh", "clang/**", ".github/workflows/cmake-test.yml"]
+
+jobs:
+  modules:
+    name: modules (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure the test driver
+        run: cmake -S cmake/test -B cmake/test/build
+      - name: Run the module tests
+        run: ctest --test-dir cmake/test/build -C Release --output-on-failure
+
+  installer:
+    name: installer (--check round trip)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install both families from this checkout into a scratch consumer, then --check
+        run: |
+          consumer="$(mktemp -d)"
+          cd "$consumer"
+          TANH_TOOLING_SRC="$GITHUB_WORKSPACE" sh "$GITHUB_WORKSPACE/install.sh" clang cmake
+          TANH_TOOLING_SRC="$GITHUB_WORKSPACE" sh "$GITHUB_WORKSPACE/install.sh" --check clang cmake
+          # a foreign file in cmake/tanh/ must be flagged
+          touch cmake/tanh/local.cmake
+          if TANH_TOOLING_SRC="$GITHUB_WORKSPACE" sh "$GITHUB_WORKSPACE/install.sh" --check cmake; then
+            echo "expected --check to flag cmake/tanh/local.cmake" >&2; exit 1
+          fi
+          # the documented clang one-liner path still works through the shim
+          rm -f .clang-format
+          TANH_TOOLING_SRC="$GITHUB_WORKSPACE" sh "$GITHUB_WORKSPACE/clang/install.sh"
+          test -f .clang-format

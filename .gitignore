@@ -14,3 +14,7 @@ node_modules/
 
 # OS
 .DS_Store
+
+# Claude Code worktrees / local CMake test builds
+.claude/worktrees/
+cmake/test/build/

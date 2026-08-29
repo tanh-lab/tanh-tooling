@@ -1,0 +1,39 @@
+name: config-check
+
+# Reusable workflow: consumers call it from their own CI with one line per repo:
+#
+#   jobs:
+#     tooling-config:
+#       uses: tanh-lab/tanh-tooling/.github/workflows/config-check.yml@vX.Y.Z
+#       with:
+#         ref: vX.Y.Z
+#         family: "clang cmake"
+#
+# It checks out the caller's repo and verifies that the committed copies of every
+# requested family (.clang-* files, cmake/tanh/*.cmake) match the pinned tanh-tooling
+# release byte for byte, and that cmake/tanh/ holds nothing else. Nothing is
+# committed in the consumer; a failure means: re-run install.sh and commit.
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: "tanh-tooling ref (tag) to check against"
+        type: string
+        default: "v0.1.5"
+      family:
+        description: "space-separated families to check: clang, cmake"
+        type: string
+        default: "clang"
+
+jobs:
+  config-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify tanh-tooling files are in sync
+        env:
+          TANH_TOOLING_REF: ${{ inputs.ref }}
+          FAMILIES: ${{ inputs.family }}
+        run: |
+          curl -fsSL "https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${TANH_TOOLING_REF}/install.sh" \
+            | sh -s -- --check $FAMILIES
