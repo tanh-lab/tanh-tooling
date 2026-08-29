@@ -33,6 +33,13 @@ endfunction()
 tanh_module_test(platform platform)
 tanh_module_test(symbol-policy-shared symbol-policy -DBUILD_SHARED_LIBS=ON)
 tanh_module_test(symbol-policy-static symbol-policy -DBUILD_SHARED_LIBS=OFF)
+tanh_module_test(git-version git-version)
+tanh_module_test(sanitizers sanitizers)
+tanh_module_test(test-deps test-deps)
+tanh_module_test(apple apple)
+tanh_module_test(package package)
+tanh_module_test(install-helpers install-helpers)
+tanh_module_test(binary-data binary-data)
 
 # platform.cmake refuses to guess before project(): script mode has no CMAKE_SYSTEM_NAME.
 add_test(NAME platform-requires-project
