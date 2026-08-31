@@ -4,10 +4,11 @@
 #   sh install.sh <family>...            write the files of each family
 #   sh install.sh --check <family>...    CI: exit non-zero if any local file differs
 #
-# Families are the top-level directories that carry a `manifest` (clang, cmake).
-# A manifest is a two-line sh fragment:
+# Families are the top-level directories that carry a `manifest` (clang, cmake,
+# hooks). A manifest is an sh fragment:
 #   FILES="a b c"        files of the family, relative to its directory
 #   DEST="cmake/tanh/%s" where each file lands in the consumer (%s = file name)
+#   MODE="755"           optional chmod applied after install (scripts/hooks)
 #
 # Pinned to a tanh-tooling release; override with TANH_TOOLING_REF=vX.Y.Z, or set
 # TANH_TOOLING_SRC=<local checkout> to install from disk (development, offline tests).
@@ -24,13 +25,13 @@ fetch() {  # fetch <repo-relative path> <out-path>
 
 check=0
 if [ "${1:-}" = "--check" ]; then check=1; shift; fi
-[ $# -gt 0 ] || { echo "usage: install.sh [--check] <family>...   (clang, cmake)" >&2; exit 2; }
+[ $# -gt 0 ] || { echo "usage: install.sh [--check] <family>...   (clang, cmake, hooks)" >&2; exit 2; }
 
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 drift=0
 for family in "$@"; do
   fetch "$family/manifest" "$tmp/manifest" || { echo "fetch failed: $family/manifest ($REF)" >&2; exit 1; }
-  FILES=""; DEST=""
+  FILES=""; DEST=""; MODE=""
   . "$tmp/manifest"
   [ -n "$FILES" ] && [ -n "$DEST" ] || { echo "bad manifest: $family/manifest" >&2; exit 1; }
   for f in $FILES; do
@@ -41,6 +42,7 @@ for family in "$@"; do
     else
       mkdir -p "$(dirname "$dest")"
       cp "$tmp/file" "$dest"
+      [ -z "$MODE" ] || chmod "$MODE" "$dest"
       echo "wrote $dest ($REF)"
     fi
   done
