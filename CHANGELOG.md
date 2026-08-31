@@ -8,6 +8,20 @@ and install with `install.sh <family>...`; the internal
 `TANH_CMAKE_MODULES_VERSION` tracks the **cmake family** and only moves when a
 cmake module changes.
 
+**Tagging checklist (mono-version)**: a `vX.Y.Z` tag also publishes the npm and
+PyPI packages, so every tag bumps `install.sh`'s default `REF`,
+`js/package.json` and `python/pyproject.toml` to X.Y.Z in the release commit.
+
+## [0.2.2] - 2026-08-31
+
+### Fixed
+
+- Mono-version alignment: `js/package.json` and `python/pyproject.toml` still
+  said 0.1.5, so the v0.2.0/v0.2.1 tags' npm publish failed ("cannot publish
+  over previously published versions") — those tags shipped no packages. This
+  release aligns all three version sources and records the tagging checklist
+  above.
+
 ## [0.2.1] - 2026-08-31
 
 ### Fixed
