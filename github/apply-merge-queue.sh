@@ -7,9 +7,12 @@
 # access to the repo.
 #
 # Required contexts must report on every PR head — entry into the queue is
-# refused while a required check has not reported, so path-filtered or
-# queue-only workflow results must NOT be listed here (their queue runs still
-# enforce them inside the merge group).
+# refused while a required check has not reported. A queue-only workflow must
+# therefore carry a PR-head stub (a pull_request trigger whose real jobs skip
+# and only the "<name> result" job reports instant success) so its result CAN
+# be listed here; an unlisted result does NOT gate the merge — non-required
+# merge-group failures are ignored (measured, anira#139). Only genuinely
+# advisory checks (e.g. path-filtered clang-tidy) stay unlisted.
 set -eu
 repo="$1"; shift
 [ $# -gt 0 ] || { echo "usage: apply-merge-queue.sh <owner/repo> <required-context>..." >&2; exit 2; }
