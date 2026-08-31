@@ -8,6 +8,15 @@ and install with `install.sh <family>...`; the internal
 `TANH_CMAKE_MODULES_VERSION` tracks the **cmake family** and only moves when a
 cmake module changes.
 
+## [0.2.1] - 2026-08-31
+
+### Fixed
+
+- `install.sh`'s default `REF` now matches the release it ships in — the v0.2.0
+  copy still defaulted to v0.1.5, so a plain `curl ... | sh` fetched the old
+  family set and could not find `hooks/`. (Release rule going forward: bumping
+  the default REF is part of tagging.)
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
