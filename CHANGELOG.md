@@ -16,6 +16,15 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ### Added
 
+- `hooks/pre-push`: a clang-format gate ahead of the existing clang-tidy one.
+  It covers every changed `.cpp`/`.h`/`.hpp`/`.mm` (clang-tidy only ever saw
+  `.cpp`, because it needs a compile DB), needs no build directory, and runs
+  first because a formatting rejection is the cheapest kind to fix. Degrades to
+  a skip when clang-format or `.clang-format` is missing, the way the tidy gate
+  does; `TANH_SKIP_FORMAT=1` skips it explicitly. The rejection message names
+  the `clang-format -i` command that fixes it. Motivated by an anira merge
+  queue rejecting a push on two over-long lines the local hook had passed.
+
 - `github/merge-queue-ruleset.json` + `github/apply-merge-queue.sh`: the shared
   merge-queue configuration (queue on the default branch, required status
   checks passed as arguments). Applied per repo once via
