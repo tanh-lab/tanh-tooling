@@ -11,6 +11,18 @@ FILE="${1:-$(jq -r '.tool_input.file_path // empty' 2>/dev/null)}"
 [ -z "$FILE" ] && exit 0
 [ -f "$FILE" ] || exit 0
 
+# A JS/TS file outside any Node project (no package.json upward — session scripts,
+# scratch files, generated code) has no linter contract to enforce: skip silently,
+# the same way the C++ arm skips files absent from the compile DB.
+in_node_project() {
+  local dir; dir=$(dirname "$FILE")
+  while [ "$dir" != "/" ]; do
+    [ -f "$dir/package.json" ] && return 0
+    dir=$(dirname "$dir")
+  done
+  return 1
+}
+
 fail() { printf '%s\n' "$1" >&2; exit 2; }
 
 node_bin() {
@@ -50,6 +62,7 @@ Install it:
     OUTPUT=$("$RUFF" check "$FILE" 2>&1) || fail "$OUTPUT"
     ;;
   *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs)
+    in_node_project || exit 0
     ESLINT=$(node_bin eslint)
     [ -n "$ESLINT" ] || fail \
 "lint hook: eslint not found.

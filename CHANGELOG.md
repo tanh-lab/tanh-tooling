@@ -14,6 +14,16 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-09-01
+
+### Fixed
+
+- `plugins/tanh-tools` 0.1.5: the JS/TS lint and format hooks skip files outside
+  any Node project (no `package.json` upward — session scripts, scratch files)
+  instead of failing with "eslint/prettier not found". Same contract as the C++
+  arm, which already skips files absent from the compile DB; a file inside a
+  Node project still demands its tools. Typecheck already resolved per-project.
+
 ## [0.2.5] - 2026-09-01
 
 ### Added
