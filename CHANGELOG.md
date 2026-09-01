@@ -23,6 +23,14 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
   and tanh-lib use the same style. Required contexts must report on every PR
   head — queue entry is refused while a required check has not reported.
 
+## [0.2.4] - 2026-09-01
+
+### Added
+
+- `cmake/platform.cmake`: `tanh_detect_emscripten()` — WASM/EMSDK_VERSION and
+  the .js executable suffix when the compiler is em++ (moved from anira; the
+  compile flags stay the caller's).
+
 ## [0.2.3] - 2026-09-01
 
 ### Added
