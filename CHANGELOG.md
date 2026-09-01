@@ -14,6 +14,21 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-09-01
+
+### Added
+
+- `hooks/pre-push`: a clang-format gate ahead of the existing clang-tidy one.
+  It covers every changed `.cpp`/`.h`/`.hpp`/`.mm` (clang-tidy only ever saw
+  `.cpp`, because it needs a compile DB), needs no build directory, and runs
+  first because a formatting rejection is the cheapest kind to fix. Degrades to
+  a skip when clang-format or `.clang-format` is missing, the way the tidy gate
+  does; `TANH_SKIP_FORMAT=1` skips it explicitly. The rejection message names
+  the `clang-format -i` command that fixes it. Motivated by an anira merge
+  queue rejecting a push on two over-long lines the local hook had passed.
+
+## [0.2.4] - 2026-09-01
+
 ### Added
 
 - `github/merge-queue-ruleset.json` + `github/apply-merge-queue.sh`: the shared
@@ -22,10 +37,6 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
   `sh github/apply-merge-queue.sh <owner/repo> <required-context>...`; anira
   and tanh-lib use the same style. Required contexts must report on every PR
   head — queue entry is refused while a required check has not reported.
-
-## [0.2.4] - 2026-09-01
-
-### Added
 
 - `cmake/platform.cmake`: `tanh_detect_emscripten()` — WASM/EMSDK_VERSION and
   the .js executable suffix when the compiler is em++ (moved from anira; the
