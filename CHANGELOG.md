@@ -23,6 +23,15 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
   and tanh-lib use the same style. Required contexts must report on every PR
   head — queue entry is refused while a required check has not reported.
 
+## [0.2.3] - 2026-09-01
+
+### Added
+
+- `cmake/apple.cmake`: `tanh_apple_default_architectures()` — default
+  CMAKE_OSX_ARCHITECTURES when unset (iOS: arm64; macOS: the host arch) and
+  mirror a single-arch macOS selection into CMAKE_SYSTEM_PROCESSOR for
+  arch-keyed asset pickers (moved from anira's CMakeLists).
+
 ## [0.2.2] - 2026-08-31
 
 ### Fixed
