@@ -14,7 +14,7 @@
 # TANH_TOOLING_SRC=<local checkout> to install from disk (development, offline tests).
 set -eu
 
-REF="${TANH_TOOLING_REF:-v0.2.5}"
+REF="${TANH_TOOLING_REF:-v0.2.6}"
 BASE="https://raw.githubusercontent.com/tanh-lab/tanh-tooling/${REF}"
 
 fetch() {  # fetch <repo-relative path> <out-path>

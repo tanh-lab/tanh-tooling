@@ -10,6 +10,18 @@ FILE="${1:-$(jq -r '.tool_input.file_path // empty' 2>/dev/null)}"
 [ -z "$FILE" ] && exit 0
 [ -f "$FILE" ] || exit 0
 
+# A JS/TS file outside any Node project (no package.json upward — session scripts,
+# scratch files, generated code) has no linter contract to enforce: skip silently,
+# the same way the C++ arm skips files absent from the compile DB.
+in_node_project() {
+  local dir; dir=$(dirname "$FILE")
+  while [ "$dir" != "/" ]; do
+    [ -f "$dir/package.json" ] && return 0
+    dir=$(dirname "$dir")
+  done
+  return 1
+}
+
 fail() { printf '%s\n' "$1" >&2; exit 2; }
 
 # Resolve a Node CLI from the nearest node_modules/.bin (walking up from the
@@ -44,6 +56,7 @@ Install it:
     "$RUFF" format "$FILE"
     ;;
   *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs)
+    in_node_project || exit 0
     PRETTIER=$(node_bin prettier)
     [ -n "$PRETTIER" ] || fail \
 "format hook: prettier not found.
