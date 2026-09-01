@@ -14,6 +14,8 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-09-01
+
 ### Added
 
 - `hooks/pre-push`: a clang-format gate ahead of the existing clang-tidy one.
@@ -25,16 +27,16 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
   the `clang-format -i` command that fixes it. Motivated by an anira merge
   queue rejecting a push on two over-long lines the local hook had passed.
 
+## [0.2.4] - 2026-09-01
+
+### Added
+
 - `github/merge-queue-ruleset.json` + `github/apply-merge-queue.sh`: the shared
   merge-queue configuration (queue on the default branch, required status
   checks passed as arguments). Applied per repo once via
   `sh github/apply-merge-queue.sh <owner/repo> <required-context>...`; anira
   and tanh-lib use the same style. Required contexts must report on every PR
   head — queue entry is refused while a required check has not reported.
-
-## [0.2.4] - 2026-09-01
-
-### Added
 
 - `cmake/platform.cmake`: `tanh_detect_emscripten()` — WASM/EMSDK_VERSION and
   the .js executable suffix when the compiler is em++ (moved from anira; the
