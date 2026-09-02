@@ -14,6 +14,29 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-09-02
+
+### Changed
+
+- `cmake/git-version.cmake`: `tanh_git_version` is pre-release aware. A tag such as
+  `v3.0.0-alpha.1` yields `TANH_VERSION_SHORT = 3.0.0` (digits only, as `project()`
+  and `find_package()` require; the old behaviour handed them `3.0.0-alpha.1` and
+  the configure failed) while `TANH_VERSION_FULL` keeps the whole describe string.
+  Two new outputs, `TANH_VERSION_PRERELEASE` (`alpha.1`, empty on a release tag)
+  and `TANH_VERSION_DISTANCE` (commits past the nearest tag, `0` on the tag), let a
+  consumer derive an ABI or pre-release ordinal from the tag. A new optional
+  `MATCH <glob>...` argument (`git describe --match`) lets a long-lived branch that
+  also reaches an older release line name itself after its own tags only. The
+  module test covers every case; the cmake-family stamp moves to 0.2.7. The no-tag
+  fallback (`0.0.0+g<hash>`) now excludes tags explicitly, so an annotated tag that
+  `MATCH` rejected cannot leak into it.
+
+### Fixed
+
+- `cmake/test/git-version`: the not-a-checkout probe passed in CI only because that
+  checkout carries no tags, and failed in a local clone whose build tree lies inside
+  the tagged repository; it now sets `GIT_CEILING_DIRECTORIES` for the probe.
+
 ## [0.2.6] - 2026-09-01
 
 ### Fixed
