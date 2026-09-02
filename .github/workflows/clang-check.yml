@@ -4,7 +4,7 @@ name: clang-config-check
 #
 #   jobs:
 #     clang-config:
-#       uses: tanh-lab/tanh-tooling/.github/workflows/clang-check.yml@v0.1.0
+#       uses: tanh-lab/tanh-tooling/.github/workflows/clang-check.yml@vX.Y.Z
 #
 # It checks out the caller's repo and verifies its .clang-* files match the
 # pinned tanh-tooling release (nothing is committed in the consumer).
