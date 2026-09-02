@@ -64,21 +64,38 @@ Background on the symbol policy: `memory-bridge/guides/about_libraries.md`.
 
 ### The export header of a library
 
-Every tanh-lab library has `<lib>/…/Exports.h` defining `<LIB>_API` as a stub over the
-primitives in tanh-lib's `tanh/core/ExportMacros.h` — the platform switch is
-maintained once there, the per-library part is the selector on the defines the policy
-sets:
+Every tanh-lab library has a self-contained `<lib>/…/Exports.h` (tanh-lib:
+`tanh/core/Exports.h`, anira: `anira/abi/export.h`) defining `<LIB>_API` as a selector
+on the defines the policy sets, with the platform spelling inlined — no include-dir
+dependency on another library's header:
 
 ```cpp
-#include <tanh/core/ExportMacros.h>
-#if defined(MYLIB_STATIC)
+#if defined(MYLIB_STATIC)          // static archive: no decoration, ever
 #define MYLIB_API
-#elif defined(MYLIB_BUILDING)
-#define MYLIB_API THL_DECL_EXPORT
+#elif defined(MYLIB_BUILDING)      // set only while compiling the library itself
+#if defined(_WIN32)
+#define MYLIB_API __declspec(dllexport)
+#elif defined(__GNUC__) || defined(__clang__)
+#define MYLIB_API __attribute__((visibility("default")))
 #else
-#define MYLIB_API THL_DECL_IMPORT
+#define MYLIB_API
+#endif
+#else
+#if defined(_WIN32)
+#define MYLIB_API __declspec(dllimport)
+#elif defined(__GNUC__) || defined(__clang__)
+#define MYLIB_API __attribute__((visibility("default")))
+#else
+#define MYLIB_API
+#endif
 #endif
 ```
+
+GCC/Clang get `visibility("default")` on both sides on purpose: the library is compiled
+with `-fvisibility=hidden`, so the attribute is what puts the API into the export
+table, and vague-linkage entities a consumer instantiates from the headers keep
+default visibility and are coalesced with the library's copies instead of becoming
+private duplicates. (`tanh/core/ExportMacros.h` is a deprecated forwarding shim.)
 
 ## Rules for a module
 
