@@ -19,7 +19,7 @@ on:
       ref:
         description: "tanh-tooling ref (tag) to check against"
         type: string
-        default: "v0.1.5"
+        default: "v0.2.7"
       family:
         description: "space-separated families to check: clang, cmake"
         type: string
