@@ -14,6 +14,19 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+### Changed
+
+- `cmake/symbol-policy.cmake`: the comment on `tanh_apply_symbol_policy` no longer
+  names tanh-lib's `THL_DECL_EXPORT` / `THL_DECL_IMPORT` macros or
+  `tanh/core/ExportMacros.h`; it describes the selector library-neutrally
+  (`<P>_BUILDING` → the platform's export decoration, else the import decoration).
+  Each library owns its export selector: tanh-lib and anira ship self-contained
+  export headers, and tanh-lib's `ExportMacros.h` is a deprecated forwarding shim.
+  Comment-only, no behaviour change; it does not need a new tooling tag on its
+  own — the cmake-family stamp `TANH_CMAKE_MODULES_VERSION` in
+  `cmake/modules-version.cmake` moves only at the next release together with
+  `install.sh`'s `REF`.
+
 ## [0.2.7] - 2026-09-02
 
 ### Changed
