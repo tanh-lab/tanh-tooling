@@ -14,6 +14,32 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-29
+
+### Added
+
+- `cmake/compile-commands.cmake`: `tanh_link_compile_commands([DIRECTORY <dir>])`
+  points `build/compile_commands.json` in the top-level source tree (or
+  `<dir>/compile_commands.json`) at this build tree's database with a relative
+  symbolic link, at configure time. A project whose presets configure several trees
+  under `build/<platform>/<config>/` calls it in the trees clangd should follow, gated
+  by an option of its own that its development presets turn on; each configure
+  re-points the link, so clangd reads the tree configured last (a wasm tree as well
+  as a desktop one). It does nothing in a subproject or when `<dir>` is the build
+  tree, and warns instead of linking when the tree writes no database (export off,
+  or a generator other than Makefiles/Ninja), when a regular file is in the way (a
+  tree configured into `<dir>` owns it), or when the link cannot be created. Module
+  test: `cmake/test/compile-commands`.
+
+### Changed
+
+- **Breaking:** `clang/clangd` reads `build/compile_commands.json`
+  (`CompilationDatabase: build/`) instead of `build/desktop/Debug/`. A `cmake -B build`
+  tree already writes the database there. A project with preset trees under `build/`
+  calls `tanh_link_compile_commands()` in them; until it does, clangd finds no database
+  there. The file now carries a comment on `--query-driver=**/em++`, which clangd needs
+  for Emscripten trees and which only the command line can set.
+
 ## [0.2.8] - 2026-09-02
 
 ### Changed

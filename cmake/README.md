@@ -57,6 +57,7 @@ disk instead of a tag.
 | `package.cmake` | `tanh_cpack_debian(VENDOR … CONTACT … RUNTIME_DESCRIPTION … DEV_DESCRIPTION … [DEPS_COMPONENTS …])` — runtime/dev/deps Debian packages, ends with `include(CPack)` |
 | `install-helpers.cmake` | `tanh_set_install_rpath(<t>… [EXTRA_ELF_PATHS …] [EXTRA_APPLE_PATHS …])` |
 | `binary-data.cmake` + `bin2cpp.cmake` | `tanh_add_binary_data(<t> NAMESPACE <ns> HEADER_NAME <h> SOURCES <files>…)` |
+| `compile-commands.cmake` | `tanh_link_compile_commands([DIRECTORY <dir>])` — links `build/compile_commands.json`, the database the clang family's `.clangd` reads, to this tree's database, so clangd follows the tree configured last; top-level project only, never replaces a regular file. The consumer gates the call (an option its development presets turn on) |
 
 Each module's header comment is the reference: inputs it reads, outputs it sets, the
 CMake minimum, and whether it may run before `project()` or inside a package config.

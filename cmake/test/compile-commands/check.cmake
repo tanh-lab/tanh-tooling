@@ -1,0 +1,48 @@
+# Asserts what the test project's tanh_link_compile_commands calls left behind. Runs
+# after the build, when the tree's compile_commands.json exists.
+#
+#   cmake -DTREE=<build tree> -DWRITES_DATABASE=ON|OFF -P check.cmake
+set(_database "${TREE}/compile_commands.json")
+set(_cases "${TREE}/cases")
+
+function(expect_link dir)
+    set(_link "${dir}/compile_commands.json")
+    if(NOT IS_SYMLINK "${_link}")
+        message(FATAL_ERROR "${_link} is not a symbolic link")
+    endif()
+    file(READ_SYMLINK "${_link}" _target)
+    if(IS_ABSOLUTE "${_target}")
+        message(FATAL_ERROR "${_link} -> ${_target}: expected a relative link")
+    endif()
+    get_filename_component(_resolved "${_link}" REALPATH)
+    get_filename_component(_expected "${_database}" REALPATH)
+    if(NOT _resolved STREQUAL _expected)
+        message(FATAL_ERROR "${_link} resolves to ${_resolved}, expected ${_expected}")
+    endif()
+endfunction()
+
+function(expect_absent dir)
+    if(EXISTS "${dir}/compile_commands.json" OR IS_SYMLINK "${dir}/compile_commands.json")
+        message(FATAL_ERROR "${dir}/compile_commands.json exists, expected nothing")
+    endif()
+endfunction()
+
+if(NOT WRITES_DATABASE)
+    expect_absent("${_cases}/fresh")
+    return()
+endif()
+
+if(NOT EXISTS "${_database}" OR IS_SYMLINK "${_database}")
+    message(FATAL_ERROR "${_database} is missing or became a link")
+endif()
+expect_link("${_cases}/fresh")
+expect_link("${_cases}/stale")
+if(IS_SYMLINK "${_cases}/file/compile_commands.json")
+    message(FATAL_ERROR "the regular file in ${_cases}/file was replaced by a link")
+endif()
+file(READ "${_cases}/file/compile_commands.json" _content)
+if(NOT _content STREQUAL "[]\n")
+    message(FATAL_ERROR "the regular file in ${_cases}/file was rewritten")
+endif()
+expect_absent("${_cases}/export-off")
+expect_absent("${_cases}/sub")
