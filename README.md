@@ -11,7 +11,7 @@ Each config family is distributed through its own ecosystem's native channel:
 |---|---|---|---|
 | Python (ruff, pyright) | [`python/`](python/) | PyPI package `tanh-tooling` | `uv add` + `tanh-tooling sync` |
 | clang (`.clang-format`/`.clang-tidy`/`.clangd`) | [`clang/`](clang/) | raw `install.sh` (verbatim copy, pinned tag) | `curl … \| sh -s -- clang` |
-| CMake modules (platform, symbol policy, export check, git version, sanitizers, test deps, Apple, CPack, RPATH, binary data) | [`cmake/`](cmake/) | raw `install.sh` (verbatim copy into `cmake/tanh/`, pinned tag) | `curl … \| sh -s -- cmake` |
+| CMake modules (platform, symbol policy, export check, git version, sanitizers, test deps, Apple, CPack, RPATH, binary data, compile-database link) | [`cmake/`](cmake/) | raw `install.sh` (verbatim copy into `cmake/tanh/`, pinned tag) | `curl … \| sh -s -- cmake` |
 | JS/TS (eslint, prettier, tsconfig) | [`js/`](js/) | npm package `@tanh-lab/tanh-tooling` | `npm i -D` + flat-config spread / `extends` |
 | `.claude` (agents/skills/hooks/MCP/LSP) | [`plugins/`](plugins/) | Claude Code plugin marketplace (this repo) | committed `.claude/settings.json` |
 
@@ -56,6 +56,15 @@ file that is not from tanh-tooling. The modules and their API are documented in
 [`cmake/README.md`](cmake/README.md). `TANH_TOOLING_SRC=<local checkout>` installs
 from disk while developing. (The older `clang/install.sh` + `clang-check.yml` pair
 keeps working for existing pins.)
+
+`.clangd` reads `build/compile_commands.json`. A plain `cmake -B build` tree writes it
+there; a project whose presets configure several trees under `build/` calls
+`tanh_link_compile_commands()` (`cmake/tanh/compile-commands.cmake`) in the trees
+clangd should follow, and each configure links the database there, so clangd reads
+the tree configured last. Emscripten trees need clangd started with
+`--query-driver=**/em++`: em++ adds the wasm target and the emsdk sysroot itself, and
+the flag lets clangd ask it for them (it is a command-line flag only, since it runs
+the compiler; `.clangd` cannot set it).
 
 **TS repo**
 ```sh

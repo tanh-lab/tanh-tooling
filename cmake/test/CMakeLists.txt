@@ -41,6 +41,7 @@ tanh_module_test(apple apple)
 tanh_module_test(package package)
 tanh_module_test(install-helpers install-helpers)
 tanh_module_test(binary-data binary-data)
+tanh_module_test(compile-commands compile-commands)
 
 # platform.cmake refuses to guess before project(): script mode has no CMAKE_SYSTEM_NAME.
 add_test(NAME platform-requires-project
