@@ -14,6 +14,13 @@ PyPI packages, so every tag bumps `install.sh`'s default `REF`,
 
 ## [Unreleased]
 
+### Removed
+
+- `plugins/tanh-tools`: the GitHub MCP server (`.mcp.json`, `GITHUB_TOKEN`), plugin
+  version 0.1.6. A fine-grained token reaches one owner's repositories only, so the
+  server belongs in each person's own configuration with the token they need; the
+  README's *GitHub MCP* section says how.
+
 ## [0.3.0] - 2026-10-29
 
 ### Added
