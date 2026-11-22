@@ -1,7 +1,7 @@
 # `tanh-tooling`
 
 tanh-lab's single source of truth for shared developer configuration — Python
-linters, clang configs, JS/TS linters, and Claude Code agents/skills/hooks/MCP.
+linters, clang configs, JS/TS linters, and Claude Code agents/skills/hooks.
 Starting a new repo means **reusing** these options instead of copy-pasting them;
 updating the house style means changing it in **one place**.
 
@@ -13,7 +13,7 @@ Each config family is distributed through its own ecosystem's native channel:
 | clang (`.clang-format`/`.clang-tidy`/`.clangd`) | [`clang/`](clang/) | raw `install.sh` (verbatim copy, pinned tag) | `curl … \| sh -s -- clang` |
 | CMake modules (platform, symbol policy, export check, git version, sanitizers, test deps, Apple, CPack, RPATH, binary data, compile-database link) | [`cmake/`](cmake/) | raw `install.sh` (verbatim copy into `cmake/tanh/`, pinned tag) | `curl … \| sh -s -- cmake` |
 | JS/TS (eslint, prettier, tsconfig) | [`js/`](js/) | npm package `@tanh-lab/tanh-tooling` | `npm i -D` + flat-config spread / `extends` |
-| `.claude` (agents/skills/hooks/MCP/LSP) | [`plugins/`](plugins/) | Claude Code plugin marketplace (this repo) | committed `.claude/settings.json` |
+| `.claude` (agents/skills/hooks/LSP) | [`plugins/`](plugins/) | Claude Code plugin marketplace (this repo) | committed `.claude/settings.json` |
 
 Releases are **mono-versioned**: one `vX.Y.Z` git tag ships the Python wheel and
 the npm package and is the pin used by the `install.sh` URLs (clang and cmake families).
@@ -107,35 +107,23 @@ per-repo — the hook runs `tsc` only when both `tsconfig.check.json` and a loca
 }
 ```
 Trust the repo once; you then get the `dsp-reviewer` agent, the `crossplatform-audio`
-skill, the auto-firing format/lint/typecheck hooks, the GitHub MCP, and the clangd
-LSP (pulled in as a plugin dependency).
+skill, the auto-firing format/lint/typecheck hooks, and the clangd LSP (pulled in as a
+plugin dependency).
 
-### GitHub MCP token
+### GitHub MCP
 
-The GitHub MCP server (`api.githubcopilot.com/mcp/`) needs a **personal access
-token** — its OAuth endpoint does not support dynamic client registration, so Claude
-Code's tokenless `/mcp` OAuth flow fails with *"Incompatible auth server"*. Don't pick
-**Authenticate** in the `/mcp` menu; instead the committed `.mcp.json` reads the token
-from a `GITHUB_TOKEN` env var (`Authorization: Bearer ${GITHUB_TOKEN}`) — the config
-travels, the token never does.
-
-Keep the token out of any repo. The convention here is a git-ignored `.secrets` file
-in your dotfiles that your shell sources on startup, exporting `GITHUB_TOKEN` into the
-environment Claude Code inherits. For example, in `~/.dotfiles/.secrets`:
-
-```sh
-# ~/.dotfiles/.secrets  (git-ignored; sourced from ~/.zshrc)
-export GITHUB_TOKEN="github_pat_…"     # or: export GITHUB_TOKEN="$(gh auth token)"
-```
-```sh
-# ~/.zshrc
-[ -f "$HOME/.dotfiles/.secrets" ] && source "$HOME/.dotfiles/.secrets"
-```
-
-Then restart Claude Code (or `/reload-plugins`) so the server reconnects with the
-header. Launching the desktop app from a GUI may not inherit shell exports — start
-`claude` from a terminal, or set `GITHUB_TOKEN` where the app can see it. A
-`gh`-issued token covers most tools; mint a fine-grained PAT if a specific call 403s.
+The plugin ships no GitHub MCP server: GitHub's remote server
+(`api.githubcopilot.com/mcp/`) is set up per person, in your own Claude Code
+configuration, with a personal access token. A fine-grained token reaches the
+repositories of one owner only (your account or one organisation), so the token and
+with it the server depend on whose repositories you work on. Its OAuth endpoint does
+not support dynamic client registration, so the tokenless **Authenticate** in the
+`/mcp` menu fails with *"Incompatible auth server"*; send the token in an
+`Authorization: Bearer ${…}` header from a variable your shell exports (e.g. from a
+git-ignored `~/.dotfiles/.secrets`), and start `claude` from a terminal so it
+inherits it. CI status on a private repository is read through the server's
+`actions` toolset (`X-MCP-Toolsets: context,repos,issues,pull_requests,users,actions`,
+token with *Actions: read*): fine-grained tokens cannot call the Checks API there.
 
 > Headless/CI (`claude -p`) skips the trust dialog, so committed marketplaces are
 > not auto-processed there — CI must `claude plugin marketplace add tanh-lab/tanh-tooling`
@@ -166,7 +154,7 @@ them directly; run standalone (no arg) they still parse the hook JSON from stdin
 ```
 tanh-tooling/
 ├── .claude-plugin/marketplace.json   # this repo IS the marketplace
-├── plugins/tanh-tools/               # the plugin (agents, skills, hooks, MCP)
+├── plugins/tanh-tools/               # the plugin (agents, skills, hooks)
 ├── python/                           # pip package → PyPI
 ├── js/                               # npm package
 ├── clang/                            # dotless canonical configs (+ shim install.sh)

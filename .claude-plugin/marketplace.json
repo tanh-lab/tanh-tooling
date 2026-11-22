@@ -5,7 +5,7 @@
     {
       "name": "tanh-tools",
       "source": "./plugins/tanh-tools",
-      "description": "tanh-lab shared agents, skills, hooks, MCP, and clangd LSP"
+      "description": "tanh-lab shared agents, skills, hooks, and clangd LSP"
     }
   ]
 }
